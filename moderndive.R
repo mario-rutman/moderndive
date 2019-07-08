@@ -9,6 +9,7 @@ library(moderndive)
 library(gapminder)
 library(skimr)
 
+
 # Por que alguns professores e instrutores de universidades e faculdades
 # recebem altas avaliações de ensino de alunos, enquanto outros não? 
 # Quais fatores podem explicar essas diferenças? 
@@ -24,7 +25,7 @@ class(evals)
 # Primeiro vou passar os nomes para o português.
 # Selecionar as 3 colunas trabalhadas agora e olhar 5 linhas 
 # escolhidas por amostragem.
- 
+
 evals_ch6 <- evals %>% rename(nota_prof = score, beleza_media = bty_avg, idade = age) %>% 
   select(nota_prof, beleza_media, idade)
 
@@ -92,6 +93,56 @@ get_regression_table(score_model)
 # a função do moderndive que dá isso é a get_regression_points().
 # nota_prof_hat é a nota_prof que está sobre a reta ajustada.
 # residual é a nota_prof menos a nota_prof_hat. 
+# ci significa intervalo de confiança.
 
 get_regression_points(score_model)
+
+gapminder2007 <- gapminder %>%
+  filter(year == 2007) %>% 
+  select(country, continent, lifeExp, gdpPercap)
+
+glimpse(gapminder2007)
+
+# Vamos dar uma olhada mais detalhada sobre as colunas
+# continent e lifeExp
+
+
+
+gapminder2007 %>% 
+  select("continent", "lifeExp") %>% 
+  skim()
+
+# Olhando as expectativas de vida num facet_wratp.
+ggplot(gapminder2007, aes(x = lifeExp)) +
+  geom_histogram(binwidth = 5, color = "white") +
+  labs(x = "Expectativa de vida", y = "Quantidade de países", 
+       title = "Expectativa de vida por continente") +
+  facet_wrap(~ continent, nrow = 2) +
+  theme_bw()
+
+ggplot(gapminder2007, aes(x = continent, y = lifeExp)) +
+  geom_boxplot() +
+  labs(x = "Continente", y = "Expectativa de vida", 
+       title = "Expectativa de vida por continente") +
+  theme_bw()
+
+# Repetir a análise acima usando as colunas
+# continente e gdpPercap.
+
+gapminder2007 %>% 
+  select("continent", "gdpPercap") %>% 
+  skim()
+
+table(gapminder2007$continent)
+
+ggplot(gapminder2007, aes(x = continent, y = gdpPercap)) +
+  geom_boxplot() +
+  labs(x = "Continente", y = "Renda percapita", 
+       title = "Renda percapita por continente") +
+  theme_bw()
+
+# Usando a função get_regression_table.
+# 
+lifeExp_model <- lm(lifeExp ~ continent, data = gapminder2007)
+get_regression_table(lifeExp_model)
 
